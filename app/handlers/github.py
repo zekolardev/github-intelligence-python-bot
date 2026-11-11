@@ -1,3 +1,4 @@
+
 import logging
 from datetime import datetime, timezone
 from html import escape
@@ -84,6 +85,7 @@ async def user_handler(
     if not username:
         await message.answer("نام کاربری را وارد کن:\n<code>/user torvalds</code>")
         return
+
     if not validate_username(username):
         await message.answer("نام کاربری GitHub معتبر نیست.")
         return
@@ -109,7 +111,11 @@ async def user_handler(
     except GitHubRateLimitError as exc:
         await message.answer(_rate_limit_message(exc))
     except GitHubAPIError as exc:
-        logger.warning("GitHub user lookup failed for %s: %s", username, type(exc).__name__)
+        logger.warning(
+            "GitHub user lookup failed for %s: %s",
+            username,
+            type(exc).__name__,
+        )
         await message.answer(_api_error_message(exc))
 
 
@@ -128,6 +134,7 @@ async def repository_handler(
         return
 
     owner, repository = argument.split("/", maxsplit=1)
+
     try:
         repo = await github.get_repository(owner, repository)
         full_name = escape(str(repo["full_name"]))
